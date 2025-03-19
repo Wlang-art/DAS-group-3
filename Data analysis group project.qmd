@@ -1,0 +1,111 @@
+---
+title: "Report on Body mass index(BMI) distribution"
+author: "William Lang"
+execute: 
+  echo: false
+  eval: true
+number-sections: true
+format:
+  html:
+    embed-resources: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(tidymodels)
+library(sjPlot)
+library(performance)
+library(kableExtra)
+library(gt)
+```
+
+# Introduction {#sec-intro}
+Body mass index(BMI) is an important variable in determing how healthy an indivdual is and is affected by such variables as diet and exercise.
+The following report will answer the questions of intrest:
+
+1. Has the body mass index (BMI) in Scotland changed over the given years of the Scottish Health Survey?
+
+2. Are there any differences in the BMI distribution by age, gender, socio-economic status or lifestyle factors?
+
+# Exploratory Analysis {#sec-EA}
+```{r}
+#| echo: false
+#| label: tbl-summmary
+#| tbl-cap:  Mean, median and standard deviation (sd) of BMI by year.
+
+library(gt)
+library(dplyr)
+bmi.data <- read.csv("DAProject6.csv")
+bmi.data.year <- bmi.data |>
+  select(BMI, Year)
+bmi.data.year |>
+   summarize('BMI.Mean' = mean(BMI),
+             'BMI.Median' = median(BMI),
+             'BMI.sd' = sd(BMI),
+             .by = Year) |>
+ gt() |> 
+  fmt_number(decimals=2) |>
+  tab_spanner(
+    label = "BMI",
+    columns = c(BMI.Mean, BMI.Median,BMI.sd)
+  ) |>
+  cols_label(
+    BMI.Mean = html("Mean"),
+    BMI.Median = html("Median"),
+    BMI.sd = html("Std.Dev"),
+  )
+
+```
+Therefore we can clearly see that the mean and median BMI has increased over the years from 2013-2016. We can also see that the variation has also increased from 2014-2016.
+
+```{r}
+ggplot()
+```
+
+
+# Formal Analysis {#sec-FA}
+
+# Conclusions {#sec-con}
+
+# Further Questions {#sec-further}
+
+## Further Question 1 {#sec-further1}
+
+1.   Answer to question 1
+
+```{r}
+#| echo: true
+#| eval: true
+# Copy your code here
+
+
+```
+
+2.  Answer to question 2: Write your equation:
+
+$$
+y_i = \beta_0 + \beta_1 x_1 + ...
+$$
+
+## Further Question 2 {#sec-further2}
+
+### Part 1
+
+1.  Answer to question 1:
+
+2.  Answer to question 2:
+
+3.  Answer to question 3:
+
+4.  Answer to question 4:
+
+5.  Answer to question 5:
+
+### Part 2
