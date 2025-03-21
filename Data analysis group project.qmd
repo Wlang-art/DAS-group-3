@@ -1,5 +1,5 @@
 ---
-title: "Report on Body mass index(BMI) distribution"
+title: "Report on Body mass index(BMI)"
 author: "William Lang"
 execute: 
   echo: false
@@ -27,14 +27,15 @@ library(gt)
 ```
 
 # Introduction {#sec-intro}
-Body mass index(BMI) is an important variable in determing how healthy an indivdual is and is affected by such variables as diet and exercise.
-The following report will answer the questions of intrest:
 
-1. Has the body mass index (BMI) in Scotland changed over the given years of the Scottish Health Survey?
+Body mass index(BMI) is an important variable in determing how healthy an indivdual is and is affected by such variables as diet and exercise. The following report will through stastical analysis answer the questions of intrest:
 
-2. Are there any differences in the BMI distribution by age, gender, socio-economic status or lifestyle factors?
+1.  Has the body mass index (BMI) in Scotland changed over the given years of the Scottish Health Survey?
+
+2.  Are there any differences in the BMI distribution by age, gender, socio-economic status or lifestyle factors?
 
 # Exploratory Analysis {#sec-EA}
+
 ```{r}
 #| echo: false
 #| label: tbl-summmary
@@ -63,13 +64,33 @@ bmi.data.year |>
   )
 
 ```
-Therefore we can clearly see that the mean and median BMI has increased over the years from 2013-2016. We can also see that the variation has also increased from 2014-2016.
+
+| Year | Mean  | Median | Standard deviation |
+|------|-------|--------|--------------------|
+| 2016 | 28.03 | 27.28  | 5.79               |
+| 2015 | 28.02 | 27.26  | 5.53               |
+| 2014 | 27.84 | 27.17  | 5.21               |
+| 2013 | 27.81 | 27.08  | 5.28               |
+
+: Mean,Median and standard deviation of BMI by year
+
+Therefore we can clearly see that the mean and median BMI has slightly increased over the years from 2013-2016. We can also see that the variation has also slightly increased from 2014-2016.
 
 ```{r}
-ggplot()
+bmi.year <- bmi.data.year
+bmi.year$Year <- as.factor(bmi.year$Year)
+
+glimpse(bmi.data.year)
+glimpse(df2)
+
+
+ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
+  geom_boxplot() +
+  labs(x = "Year", y = "BMI", title = "BMI over the different years") +
+  scale_fill_discrete(guide = "none")
 ```
 
-
+We can therefore see from the boxplots that there is a slight increase in BMI over the years and that the normality assumption is not vaild due to the number of outliers in the data.
 # Formal Analysis {#sec-FA}
 
 # Conclusions {#sec-con}
@@ -78,7 +99,7 @@ ggplot()
 
 ## Further Question 1 {#sec-further1}
 
-1.   Answer to question 1
+1.  Answer to question 1
 
 ```{r}
 #| echo: true
