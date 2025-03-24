@@ -32,9 +32,7 @@ library(gapminder)
 
 # Introduction {#sec-intro}
 
-
 Body mass index(BMI) is an important variable in determing how healthy an indivdual is and is affected by such variables as diet and exercise. The following report will through stastical analysis answer the questions of intrest:
-
 
 1.  Has the body mass index (BMI) in Scotland changed over the given years of the Scottish Health Survey?
 
@@ -71,7 +69,6 @@ bmi.data.year |>
 
 ```
 
-
 | Year | Mean  | Median | Standard deviation |
 |------|-------|--------|--------------------|
 | 2016 | 28.03 | 27.28  | 5.79               |
@@ -83,13 +80,11 @@ bmi.data.year |>
 
 Therefore we can clearly see that the mean and median BMI has slightly increased over the years from 2013-2016. We can also see that the variation has also slightly increased from 2014-2016.
 
-
 ```{r}
 bmi.year <- bmi.data.year
 bmi.year$Year <- as.factor(bmi.year$Year)
 
 glimpse(bmi.data.year)
-glimpse(df2)
 
 
 ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
@@ -98,16 +93,13 @@ ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
   scale_fill_discrete(guide = "none")
 ```
 
-
 We can therefore see from the boxplots that there is a slight increase in BMI over the years and that the normality assumption is not vaild due to the number of outliers in the data.
 
 # Formal Analysis {#sec-FA}
 
 ## Question 1
 
-
 To determine whether BMI has changed in Scotland over the given years, we fit a regression model, where BMI is our outcome variable y and Year is our categorical variable x :
-
 
 ```{r}
 data <- read.csv("DAProject6.csv")
