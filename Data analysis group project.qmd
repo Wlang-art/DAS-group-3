@@ -152,6 +152,9 @@ ggplot(regression_points, aes(x = residual)) +
 @fig-reg-hist shows that the residuals are centered at zero and are bell shaped. Therefore our assumption of normality appears to be valid.
 ## Question 2
 
+```{r}
+bmi <- read_csv("~/Downloads/DAProject6.csv", show_col_types = FALSE)
+
 library(ggplot2)
 library(dplyr)
 library(skimr)
@@ -163,15 +166,22 @@ ggplot(bmi, aes(x = BMI)) +
        y = "Frequency") +
   theme_minimal()
 
+
+```
+```{r}
 lm_spec <- linear_reg() |> set_engine("lm")
 bmi.model1 <- lm_spec |> fit(BMI ~ Age + Sex + Education + Veg + Fruit +Year, data = bmi)
 bmi.model1 <- bmi.model1 |> extract_fit_engine()
 get_regression_table(bmi.model1)
+```
 
+```{r}
 lm_spec <- linear_reg() 
 bmi.model1.int <- lm_spec |> fit(BMI ~ Age * Sex * Education * Veg * Fruit * Year, data = bmi)
 bmi.model1.int <- bmi.model1.int |> extract_fit_engine()
 get_regression_table(bmi.model1.int)
+```
+```{r}
 
 library(tidymodels)
 library(moderndive) 
@@ -213,6 +223,10 @@ model_comparison <- bind_rows(
          BIC = BIC(bmi_model_int_fit))
 )
 print(model_comparison)
+
+
+plot(bmi_model_int_fit)
+```
 
 # Conclusions {#sec-con}
 
