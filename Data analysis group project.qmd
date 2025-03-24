@@ -131,16 +131,15 @@ where
     \end{array}\right.
     $$
 
-We can now assess the fit of our model. First, we obtain our fitted values and residuals:
+We can now assess the fit of our model.
 
 ```{r}
 
 regression_points <- get_regression_points(model1$fit)
-regression_points
 
 ```
 
-We can then plot the residuals for each year to test our assumptions:
+We first do this by obtaining residuals. These are then plotted by year to test our assumptions:
 
 ```{r}
 #| label: fig-reg-scatter
