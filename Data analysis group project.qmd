@@ -79,9 +79,9 @@ ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
 
 We can therefore see from the boxplots that there is a slight increase in BMI over the years and that the normality assumption is not vaild due to the number of outliers in the data.
 
-Analyzing BMI Distribution by Different Factors
+##Analyzing BMI Distribution by Different Factors
 
-Age
+###Age
 
 {r label=fig-line,fig.cap="The linear relation ship between Age and BMI",warning=FALSE,message=FALSE}
 ggplot(bmi.data, aes(x = Age, y = BMI)) +
@@ -96,7 +96,7 @@ From @fig-line we can see that there is a weak linear relation between age and B
 
 This weak relation tells that there is a small negative effect of the Age on the BMI.
 
-Gender
+###Gender
 
 {r label=fig-sex,fig.cap="The boxplot of the Sex VS BMI",warning=FALSE,message=FALSE}
 ggplot(bmi.data, aes(x = Sex, y = BMI, fill = Sex)) +
@@ -107,7 +107,7 @@ ggplot(bmi.data, aes(x = Sex, y = BMI, fill = Sex)) +
 
 From @fig-sex we can see that greater variability in BMI among females compared to males,however having the same median indicates that while central tendency is similar, BMI distribution differs between genders.
 
-Education
+###Education
 
 {r label=fig-education,fig.cap="BMI Distribution by Education",warning=FALSE,message=FALSE}
 ggplot(bmi.data, aes(x = Education, y = BMI, fill = Education)) +
@@ -119,7 +119,7 @@ ggplot(bmi.data, aes(x = Education, y = BMI, fill = Education)) +
 
 From @fig-education we can see that the small different in medians suggest a minor impact of education on BMI. However the variation on boxplots spreads,indicates that higher education levels might be associated with lower BMI variability.
 
-Veg
+###Veg
 
 {r warning=FALSE,message=FALSE,label=fig-veg}
 plot1<-ggplot(bmi.data, aes(x = Veg, y = BMI, fill = Veg)) +
