@@ -1,6 +1,7 @@
 ---
 title: "Report on Body mass index(BMI)"
-author: "William Lang"
+authors: "William Lang,  Freya Lynn, Abbey O'Donnell, Soultan Albarghouth"
+       
 execute: 
   echo: false
   eval: true
@@ -46,22 +47,7 @@ library(dplyr)
 bmi.data <- read.csv("DAProject6.csv")
 bmi.data.year <- bmi.data |>
   select(BMI, Year)
-bmi.data.year |>
-   summarize('BMI.Mean' = mean(BMI),
-             'BMI.Median' = median(BMI),
-             'BMI.sd' = sd(BMI),
-             .by = Year) |>
- gt() |> 
-  fmt_number(decimals=2) |>
-  tab_spanner(
-    label = "BMI",
-    columns = c(BMI.Mean, BMI.Median,BMI.sd)
-  ) |>
-  cols_label(
-    BMI.Mean = html("Mean"),
-    BMI.Median = html("Median"),
-    BMI.sd = html("Std.Dev"),
-  )
+
 
 ```
 
@@ -80,9 +66,6 @@ Therefore we can clearly see that the mean and median BMI has slightly increased
 bmi.year <- bmi.data.year
 bmi.year$Year <- as.factor(bmi.year$Year)
 
-glimpse(bmi.data.year)
-glimpse(df2)
-
 
 ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
   geom_boxplot() +
@@ -91,42 +74,4 @@ ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
 ```
 
 We can therefore see from the boxplots that there is a slight increase in BMI over the years and that the normality assumption is not vaild due to the number of outliers in the data.
-# Formal Analysis {#sec-FA}
 
-# Conclusions {#sec-con}
-
-# Further Questions {#sec-further}
-
-## Further Question 1 {#sec-further1}
-
-1.  Answer to question 1
-
-```{r}
-#| echo: true
-#| eval: true
-# Copy your code here
-
-
-```
-
-2.  Answer to question 2: Write your equation:
-
-$$
-y_i = \beta_0 + \beta_1 x_1 + ...
-$$
-
-## Further Question 2 {#sec-further2}
-
-### Part 1
-
-1.  Answer to question 1:
-
-2.  Answer to question 2:
-
-3.  Answer to question 3:
-
-4.  Answer to question 4:
-
-5.  Answer to question 5:
-
-### Part 2
