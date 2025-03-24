@@ -165,5 +165,68 @@ ggplot(regression_points, aes(x = residual)) +
 ```
 
 @fig-reg-hist shows that the residuals are centered at zero and are bell shaped. Therefore our assumption of normality appears to be valid.
+## Question 2
+
+library(ggplot2)
+library(dplyr)
+library(skimr)
+ggplot(bmi.data, aes(x = BMI)) +
+  geom_histogram(binwidth = 1, fill = "blue4", color = "black", alpha = 0.5) +
+  geom_density(color = "red", linewidth = 1) +
+  labs(title = "Distribution of BMI",
+       x = "BMI",
+       y = "Frequency") +
+  theme_minimal()
+
+lm_spec <- linear_reg() |> set_engine("lm")
+bmi.model1 <- lm_spec |> fit(BMI ~ Age + Sex + Education + Veg + Fruit +Year, data = bmi.data)
+bmi.model1 <- bmi.model1 |> extract_fit_engine()
+get_regression_table(bmi.model1)
+
+lm_spec <- linear_reg() 
+bmi.model1.int <- lm_spec |> fit(BMI ~ Age * Sex * Education * Veg * Fruit * Year, data = bmi.data)
+bmi.model1.int <- bmi.model1.int |> extract_fit_engine()
+get_regression_table(bmi.model1.int)
+
+library(tidymodels)
+library(moderndive) 
+library(broom)      
+library(dplyr)
+
+lm_spec <- linear_reg()
+
+bmi_full_model <- lm_spec %>% 
+  fit(BMI ~ Age + Sex + Education + Veg + Fruit + Year, data = bmi.data)
+
+
+bmi_full_model_fit <- bmi_full_model |> extract_fit_engine()
+full_results <- tidy(bmi_full_model_fit, conf.int = TRUE)
+print(full_results)
+
+
+bmi_model_int <- lm_spec |>
+  fit(BMI ~ Age + Sex + Education + Veg + Fruit + Year + 
+        Age:Sex +           
+        Sex:Education +     
+        Veg:Fruit +         
+        Year:Age,           
+      data = bmi.data)
+
+
+bmi_model_int_fit <- bmi_model_int |> extract_fit_engine()
+
+int_results <- get_regression_table(bmi_model_int_fit)
+print(int_results)
+
+
+model_comparison <- bind_rows(
+  tibble(model = "Full Model", 
+         AIC = AIC(bmi_full_model_fit),
+         BIC = BIC(bmi_full_model_fit)),
+  tibble(model = "Interaction Model", 
+         AIC = AIC(bmi_model_int_fit),
+         BIC = BIC(bmi_model_int_fit))
+)
+print(model_comparison)
 
 # Conclusions {#sec-con}
