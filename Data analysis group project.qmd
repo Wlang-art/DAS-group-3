@@ -24,17 +24,22 @@ library(sjPlot)
 library(performance)
 library(kableExtra)
 library(gt)
+library(tidyverse)
+library(moderndive)
+library(skimr)
+library(gapminder)
 ```
 
 # Introduction {#sec-intro}
-Body mass index(BMI) is an important variable in determing how healthy an indivdual is and is affected by such variables as diet and exercise.
-The following report will answer the questions of intrest:
 
-1. Has the body mass index (BMI) in Scotland changed over the given years of the Scottish Health Survey?
+Body mass index(BMI) is an important variable in determing how healthy an indivdual is and is affected by such variables as diet and exercise. The following report will answer the questions of intrest:
 
-2. Are there any differences in the BMI distribution by age, gender, socio-economic status or lifestyle factors?
+1.  Has the body mass index (BMI) in Scotland changed over the given years of the Scottish Health Survey?
+
+2.  Are there any differences in the BMI distribution by age, gender, socio-economic status or lifestyle factors?
 
 # Exploratory Analysis {#sec-EA}
+
 ```{r}
 #| echo: false
 #| label: tbl-summmary
@@ -63,49 +68,83 @@ bmi.data.year |>
   )
 
 ```
+
 Therefore we can clearly see that the mean and median BMI has increased over the years from 2013-2016. We can also see that the variation has also increased from 2014-2016.
 
 ```{r}
 ggplot()
 ```
 
-
 # Formal Analysis {#sec-FA}
 
-# Conclusions {#sec-con}
+## Question 1
 
-# Further Questions {#sec-further}
-
-## Further Question 1 {#sec-further1}
-
-1.   Answer to question 1
+To determine whether BMI has changed in Scotland over the given years, we fit a regression model, where BMI is our outcome variable y and Year is our categorical variable x :
 
 ```{r}
-#| echo: true
-#| eval: true
-# Copy your code here
+data <- read.csv("DAProject6.csv")
 
+data$Year <- as.factor(data$Year)
+  
+model1 <- linear_reg() |>
+  fit(BMI ~ Year, data = data)
+```
+
+We can use the estimates obtained here to fit our regression equation as follows:
+
+$$
+BMI = \alpha + \beta_{2014}\cdot I_{2014}(x) +\beta_{2015}\cdot I_{2015}(x)+\beta_{2016}\cdot I_{2016}(x)
+$$
+
+where
+
+-   the intercept $\alpha$ is the mean BMI for our baseline year, 2013;
+
+-   $\beta_{year}$ is the difference in the mean BMI in a given year relative to the baseline year 2013; and
+
+-   $I_{year}(x)$ is an indicator function such that
+
+    $$
+    I_{year}(x) = \left\{ \begin{array}{rcl}\
+    1 & \mbox{if x matches the given year}
+     \\ 0 & \mbox{otherwise} 
+    \end{array}\right.
+    $$
+
+We can now assess the fit of our model. First, we obtain our fitted values and residuals:
+
+```{r}
+
+regression_points <- get_regression_points(model1$fit)
+regression_points
 
 ```
 
-2.  Answer to question 2: Write your equation:
+We can then plot the residuals for each year to test our assumptions:
 
-$$
-y_i = \beta_0 + \beta_1 x_1 + ...
-$$
+```{r}
+#| label: fig-reg-scatter
+#| fig-cap: Scatterplot of Residuals by Year
 
-## Further Question 2 {#sec-further2}
+ggplot(regression_points, aes(x = Year, y = residual)) +
+  geom_jitter(width = 0.1) + 
+  labs(x = "Year", y = "Residual") +
+  geom_hline(yintercept = 0, col = "blue")
 
-### Part 1
+```
 
-1.  Answer to question 1:
+@fig-reg-scatter shows that the residuals are evenly spread and have mean zero. Therefore our assumption of constant variance appears to be valid.
 
-2.  Answer to question 2:
+We next plot a histogram to check that the residuals are normally distributed:
 
-3.  Answer to question 3:
+```{r}
+#| label: fig-reg-hist 
+#| fig-cap: Histogram of Residuals
+ggplot(regression_points, aes(x = residual)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  labs(x = "Residual")
+```
 
-4.  Answer to question 4:
+@fig-reg-hist shows that the residuals are centered at zero and are bell shaped. Therefore our assumption of normality appears to be valid.
 
-5.  Answer to question 5:
-
-### Part 2
+# Conclusions {#sec-con}
