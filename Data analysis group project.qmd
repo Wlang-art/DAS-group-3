@@ -171,7 +171,7 @@ ggplot(regression_points, aes(x = residual)) +
 library(ggplot2)
 library(dplyr)
 library(skimr)
-ggplot(bmi, aes(x = BMI)) +
+ggplot(bmi.data, aes(x = BMI)) +
   geom_histogram(binwidth = 1, fill = "blue4", color = "black", alpha = 0.5) +
   geom_density(color = "red", linewidth = 1) +
   labs(title = "Distribution of BMI",
@@ -180,12 +180,12 @@ ggplot(bmi, aes(x = BMI)) +
   theme_minimal()
 
 lm_spec <- linear_reg() |> set_engine("lm")
-bmi.model1 <- lm_spec |> fit(BMI ~ Age + Sex + Education + Veg + Fruit +Year, data = bmi)
+bmi.model1 <- lm_spec |> fit(BMI ~ Age + Sex + Education + Veg + Fruit +Year, data = bmi.data)
 bmi.model1 <- bmi.model1 |> extract_fit_engine()
 get_regression_table(bmi.model1)
 
 lm_spec <- linear_reg() 
-bmi.model1.int <- lm_spec |> fit(BMI ~ Age * Sex * Education * Veg * Fruit * Year, data = bmi)
+bmi.model1.int <- lm_spec |> fit(BMI ~ Age * Sex * Education * Veg * Fruit * Year, data = bmi.data)
 bmi.model1.int <- bmi.model1.int |> extract_fit_engine()
 get_regression_table(bmi.model1.int)
 
@@ -197,7 +197,7 @@ library(dplyr)
 lm_spec <- linear_reg()
 
 bmi_full_model <- lm_spec %>% 
-  fit(BMI ~ Age + Sex + Education + Veg + Fruit + Year, data = bmi)
+  fit(BMI ~ Age + Sex + Education + Veg + Fruit + Year, data = bmi.data)
 
 
 bmi_full_model_fit <- bmi_full_model |> extract_fit_engine()
@@ -211,7 +211,7 @@ bmi_model_int <- lm_spec |>
         Sex:Education +     
         Veg:Fruit +         
         Year:Age,           
-      data = bmi)
+      data = bmi.data)
 
 
 bmi_model_int_fit <- bmi_model_int |> extract_fit_engine()
