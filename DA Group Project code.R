@@ -20,3 +20,5 @@ ggplot(regression_points, aes(x = Year, y = residual)) +
   geom_jitter(width = 0.1) + 
   labs(x = "Year", y = "Residual") +
   geom_hline(yintercept = 0, col = "blue")
+
+
