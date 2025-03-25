@@ -80,6 +80,68 @@ ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
 We can therefore see from the boxplots that there is a slight increase in BMI over the years and that the normality assumption is not vaild due to the number of outliers in the data.
 
 
+##Analyzing BMI Distribution by Different Factors
+###Age
+
+```{r label=fig-line,fig.cap="The linear relation ship between Age and BMI",warning=FALSE,message=FALSE}
+ggplot(bmi.data, aes(x = Age, y = BMI)) + 
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm",se=FALSE, col = "blue") +
+  theme_minimal() + labs(title = "BMI vs Age", x = "Age", y = "BMI")
+```
+
+
+From @fig-line we can see that there is a weak linear relation between age and BMI.
+
+This weak relation tells that there is a small negative effect of the Age on the BMI.
+
+###Gender
+
+```{r label=fig-sex,fig.cap="The boxplot of the Sex VS BMI",warning=FALSE,message=FALSE }
+ggplot(bmi.data, aes(x = Sex, y = BMI, fill = Sex)) + 
+  geom_boxplot() + 
+  theme_minimal() + 
+  labs(title = "BMI Distribution by Gender", x = "Gender", y = "BMI")
+```
+
+
+
+From @fig-sex we can see that greater variability in BMI among females compared to males,however having the same median indicates that while central tendency is similar, BMI distribution differs between genders.
+
+###Education
+
+```{r label=fig-education,fig.cap="BMI Distribution by Education",warning=FALSE,message=FALSE}
+ggplot(bmi.data, aes(x = Education, y = BMI, fill = Education)) +
+  geom_boxplot() +
+  theme_minimal() + 
+  labs(title = "BMI Distribution by Education", x = "Education Level",
+  y = "BMI")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+From @fig-education we can see that the small different in medians suggest a minor impact of education on BMI. However the variation on boxplots spreads,indicates that higher education levels might be associated with lower BMI variability.
+
+###Veg
+
+```{r warning=FALSE,message=FALSE,label=fig-veg}
+plot1<-ggplot(bmi.data, aes(x = Veg, y = BMI, fill = Veg)) + 
+  geom_boxplot() + 
+  theme_minimal() + 
+  labs(title = "BMI vs Vegetable Consumption", x = "Vegetable Intake", y = "BMI")
+
+plot2<-ggplot(bmi.data, aes(x = Fruit, y = BMI, fill = Fruit)) +
+  geom_boxplot() + 
+  theme_minimal() + 
+  labs(title = "BMI vs Fruit Consumption", x = "Fruit Intake", y = "BMI") library(patchwork)
+plot1|plot2
+```
+
+
+
+From @fig-veg since both fruit and vegetarian have same boxplots distribution and median,it suggest that neither of them significantly effect BMI distribution.This indicates that BMI is similar regardless of whether a person having a fruit or vegetable.
+
 
 # Formal Analysis {#sec-FA}
 
