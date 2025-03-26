@@ -79,7 +79,7 @@ bmi.year$Year <- as.factor(bmi.year$Year)
 
 ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
   geom_boxplot() +
-  labs(x = "Year", y = "BMI", title = "BMI over the different years") +
+  labs(x = "Year", y = "BMI", title = "BMI by Year") +
   scale_fill_discrete(guide = "none")
 ```
 
@@ -111,7 +111,7 @@ This weak relation tells that there is a small positive effect of age on BMI.
 
 ```{r}
 #| label: fig-sex
-#| fig.cap: "The boxplot of the Sex VS BMI"
+#| fig.cap: "Boxplot of Sex VS BMI"
 #| warning: FALSE
 #| message: FALSE 
 #| fig-width: 4
@@ -150,6 +150,7 @@ From @fig-education we can see that the small different in medians suggest a min
 #| warning: FALSE
 #| message: FALSE
 #| label: fig-veg
+#| fig-cap: "Boxlots of BMI by Fruit and Vegetable Consumption"
 #| fig-width: 6
 #| fig-height: 3
 
