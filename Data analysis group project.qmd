@@ -67,6 +67,7 @@ bmi.data.year <- bmi.data |>
 Therefore we can clearly see that the mean and median BMI has slightly increased over the years from 2013-2016. We can also see that the variation has also slightly increased from 2014-2016.
 
 ```{r}
+#| echo: false
 bmi.year <- bmi.data.year
 bmi.year$Year <- as.factor(bmi.year$Year)
 

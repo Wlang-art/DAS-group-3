@@ -123,6 +123,8 @@ ggplot(bmi.data, aes(x = Sex, y = BMI, fill = Sex)) +
 From @fig-sex we can see that greater variability in BMI among females
 compared to males,however having the same median indicates that while
 central tendency is similar, BMI distribution differs between genders.
+The normality assumption may not be satisfied due to the outliers in the
+boxplots.
 
 ### Education
 
@@ -140,9 +142,10 @@ ggplot(bmi.data, aes(x = Education, y = BMI, fill = Education)) +
 From @fig-education we can see that the small different in medians
 suggest a minor impact of education on BMI. However the variation on
 boxplots spreads,indicates that higher education levels might be
-associated with lower BMI variability.
+associated with lower BMI variability. The normality assumption may not
+be satisfied due to outliers in the data.
 
-### Veg
+### Fruit and Veg
 
 ```{r warning=FALSE,message=FALSE,label=fig-veg}
 plot1<-ggplot(bmi.data, aes(x = Veg, y = BMI, fill = Veg)) + 
@@ -153,16 +156,18 @@ plot1<-ggplot(bmi.data, aes(x = Veg, y = BMI, fill = Veg)) +
 plot2<-ggplot(bmi.data, aes(x = Fruit, y = BMI, fill = Fruit)) +
   geom_boxplot() + 
   theme_minimal() + 
-  labs(title = "BMI vs Fruit Consumption", x = "Fruit Intake", y = "BMI") library(patchwork)
+  labs(title = "BMI vs Fruit Consumption", x = "Fruit Intake", y = "BMI") 
+library(patchwork)
 plot1|plot2
 
 
 ```
 
-From @fig-veg since both fruit and vegetarian have same boxplots
-distribution and median,it suggest that neither of them significantly
-effect BMI distribution.This indicates that BMI is similar regardless of
-whether a person having a fruit or vegetable.
+From @fig-veg since both fruit and vegetarian have similar boxplots and
+median,it suggest that neither of them significantly effect BMI
+distribution. This indicates that BMI is similar regardless of whether a
+person having a fruit or vegetable. The normality assumption may not be
+satisfied due to outliers in the data.
 
 # Formal Analysis {#sec-FA}
 
@@ -179,7 +184,27 @@ data$Year <- as.factor(data$Year)
   
 model1 <- linear_reg() |>
   fit(BMI ~ Year, data = data)
+model1
 ```
+
+| Intercept | Year2014 | Year2015 | Year2016 |
+|-----------|----------|----------|----------|
+| 27.81034  | 0.02872  | 0.21339  | 0.22322  |
+
+: Model output of BMI against year
+
+We can interpret the estimates as follows: Intercept: This tells us that
+when the year is 2013 the BMI of an individual is expected to be
+27.81034.
+
+Year2014: This tells us that when the year is 2014 there is an
+associated an increase of,on average of 0.02872 in BMI of an individual.
+
+Year2015: This tells us that when the year is 2015 there is an
+associated an increase of,on average of 0.21339 in BMI of an individual.
+
+Year2016: This tells us that when the year is 2016 there is an
+associated an increase of,on average of 0.22322 in BMI of an individual.
 
 We can use the estimates obtained here to fit our regression equation as
 follows:
