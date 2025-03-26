@@ -67,11 +67,13 @@ bmi.data.year <- bmi.data |>
 Therefore we can clearly see that the mean and median BMI has slightly increased over the years from 2013-2016. We can also see that the variation has also slightly increased from 2014-2016.
 
 ```{r}
+
 #| label: box-bmi-year
 #| fig-cap: Boxplot of BMI by Year
 #| fig-width: 4
 #| fig-height: 3
   
+
 bmi.year <- bmi.data.year
 bmi.year$Year <- as.factor(bmi.year$Year)
 
@@ -83,6 +85,7 @@ ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
 ```
 
 We can therefore see from the boxplots that there is a slight increase in BMI over the years and that the normality assumption is not vaild due to the number of outliers in the data.
+
 
 ## Analyzing BMI Distribution by Different Factors
 
@@ -168,6 +171,7 @@ plot1|plot2
 
 From @fig-veg since both fruit and vegetarian have same boxplots distribution and median,it suggest that neither of them significantly effect BMI distribution.This indicates that BMI is similar regardless of whether a person having a fruit or vegetable.
 
+
 # Formal Analysis {#sec-FA}
 
 ## Question 1
@@ -245,73 +249,6 @@ ggplot(regression_points, aes(x = residual)) +
 
 ## Question 2
 
-```{r}
-bmi <- read_csv("DAProject6.csv")
-lm_spec <- linear_reg() |> set_engine("lm")
-bmi.model1 <- lm_spec |> fit(BMI ~ Age + Sex + Education + Veg + Fruit +Year, data = bmi)
-bmi.model1 <- bmi.model1 |> extract_fit_engine()
-get_regression_table(bmi.model1)
-```
-
-```{r}
-
-lm_spec <- linear_reg() 
-bmi.model1.int <- lm_spec |> fit(BMI ~ Age * Sex * Education * Veg * Fruit * Year, data = bmi)
-bmi.model1.int <- bmi.model1.int |> extract_fit_engine()
-get_regression_table(bmi.model1.int)
-```
-
-```{r}
-
-
-library(tidymodels)
-library(moderndive) 
-library(broom)      
-library(dplyr)
-
-lm_spec <- linear_reg()
-
-bmi_full_model <- lm_spec %>% 
-  fit(BMI ~ Age + Sex + Education + Veg + Fruit + Year, data = bmi)
-
-
-bmi_full_model_fit <- bmi_full_model |> extract_fit_engine()
-full_results <- tidy(bmi_full_model_fit, conf.int = TRUE)
-print(full_results)
-
-
-bmi_model_int <- lm_spec |>
-  fit(BMI ~ Age + Sex + Education + Veg + Fruit + Year + 
-        Age:Sex +           
-        Sex:Education +     
-        Veg:Fruit +         
-        Year:Age,           
-      data = bmi)
-
-
-bmi_model_int_fit <- bmi_model_int |> extract_fit_engine()
-
-int_results <- get_regression_table(bmi_model_int_fit)
-print(int_results)
-
-
-model_comparison <- bind_rows(
-  tibble(model = "Full Model", 
-         AIC = AIC(bmi_full_model_fit),
-         BIC = BIC(bmi_full_model_fit)),
-  tibble(model = "Interaction Model", 
-         AIC = AIC(bmi_model_int_fit),
-         BIC = BIC(bmi_model_int_fit))
-)
-print(model_comparison)
-
-
-plot(bmi_model_int_fit)
-```
-
-## Question 2
-
-To investigate changes in BMI across age, gender, fruit and veg consumption or socioeconomic status, we will use multiple linear regression. Before we do this we will check that the BMI data is normally distributed.
 
 ```{r}
 
@@ -325,6 +262,8 @@ library(dplyr)
 library(tidyverse)
 library(corrplot)
 library(knitr)
+library(parsnip)
+
 bmi.data <- read_csv("DAProject6.csv", show_col_types = FALSE)
 plot1<-ggplot(bmi.data, aes(x = BMI)) +
   geom_histogram(binwidth = 1, fill = "blue4", color = "black", alpha = 0.5) +
@@ -339,9 +278,10 @@ plot2 <- ggplot(bmi.data, aes(sample = BMI)) +
 
 library(patchwork)
 plot1|plot2
+
 ```
 
-The histogram in figure1 shows the BMI data to follow a normal distribution, although slightly right skewed. Similarly the Q-Q plot in figure2 shows the data points lie close to the diagonal line but show a slight upward curve at both ends. This does not cause too much concern, so we shall continue to fit a linear regression model.
+To investigate changes in BMI across age, gender, fruit and veg consumption or socioeconomic status, we will use multiple linear regression. From our exploratory analysis we see that the histogram shows the BMI data to follow a normal distribution, although slightly right skewed. Similarly the Q-Q plot shows the data points lie close to the diagonal line but show a slight upward curve at both ends. This does not cause too much concern, so we shall continue to fit a linear regression model.
 
 We fit the model:
 
@@ -351,7 +291,6 @@ $$BMI_i = \alpha + \beta_{\mathrm{Age}} \cdot Age_i + \beta_{\mathrm{Male}} \cdo
 lm_spec <- linear_reg() |> set_engine("lm")
 full.model <- lm_spec |> fit(BMI ~ Age + Sex + Education + Veg + Fruit, data = bmi.data)
 full.model <- full.model |> extract_fit_engine()
-get_regression_table(full.model)
 ```
 
 From the regression table, we can see that the significance of the variables "Sex: Male", "Veg: Yes" and "Fruit: Yes" all include 0 in their confidence intervals and have a p-value that exceeds 0.05. This causes us to question whether these variables are significant in telling us anything about the BMI distribution. We will remove them from the model:
@@ -362,37 +301,52 @@ $$BMI_i = \alpha + \beta_{\mathrm{Age}} \cdot Age_i + \beta_{\mathrm{Education}}
 lm_spec <- linear_reg() |> set_engine("lm")
 parallel.model.reduced <- lm_spec |> fit(BMI ~ Age + Education, data = bmi.data)
 parallel.model.reduced <- parallel.model.reduced |> extract_fit_engine()
-get_regression_table(parallel.model.reduced)
 ```
 
 Now we consider whether interactions may improve the model. As our reduced model only considers Age and Education as statistically significant, we shall fit a model that considers the interaction between them, :
 
-```{r}
-lm_spec <- linear_reg()
-interaction.model <- lm_spec |> fit(BMI ~ Age * Education, data = bmi.data)
-interaction.model <- interaction.model |> extract_fit_engine()
-get_regression_table(interaction.model)
-```
 
-Now to compare the models:
+$$BMI_i = \alpha + \beta_{\mathrm{Age}} \cdot Age_i + \beta_{\mathrm{Education}} \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \Sigma_{j}\beta_{\mathrm{Educationj}} \cdot \mathbb{I}_{\mathrm{Educationj}}(x_i) + \Sigma_{j}\beta_{\mathrm{InteractiojJ}} \cdot Age_i \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \epsilon_i,$$
 
-Now that we have 3 models, we compare them using objective criteria. We shall compare the full model, interaction model and reduced model for BIC, AIC and R squared adjusted:
 
 ```{r}
 lm_spec <- linear_reg()
 interaction.model <- lm_spec |> fit(BMI ~ Age * Education, data = bmi.data)
 interaction.model <- interaction.model |> extract_fit_engine()
-get_regression_table(interaction.model)
+
 ```
 
-Now to compare the models:
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| term                                 | estimate | std_error | statistic | p_value | lower_ci | upper_ci |
++======================================+==========+===========+===========+=========+==========+==========+
+| intercept                            | 25.406   | 0.266     | 95.669    | 0.000   | 24.886   | 25.927   |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Age                                  | 0.037    | 0.005     | 7.225     | 0.000   | 0.027    | 0.047    |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Education: Higher grade or equiv     | -1.068   | 0.408     | -2.616    | 0.009   | -1.868   | -0.268   |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Education: HNC/D or equiv            | 1.268    | 0.473     | 2.683     | 0.007   | 0.342    | 2.194    |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Education: No qualifications         | 2.849    | 0.562     | 5.071     | 0.000   | 1.748    | 3.950    |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Education: Other school level        | 1.532    | 0.970     | 1.579     | 0.114   | -0.370   | 3.434    |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Education: Standard                  | 0.456    | 0.412     | 1.107     | 0.268   | -0.351   | 1.263    |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Age:EducationHigh                    | 0.036    | 0.008     | 4.380     | 0.000   | 0.020    | 0.053    |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Age:EducationHNC/D or equiv          | -0.005   | 0.010     | -0.517    | 0.605   | -0.024   | 0.014    |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Age:EducationNo q                    | \        | 0.009     | -2.793    | 0.005   | -0.044   | -0.008   |
+|                                      | -0.026   |           |           |         |          |          |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Age:EducationOther school level      | -0.011   | 0.015     | -0.788    | 0.430   | -0.040   | 0.017    |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
+| Age:EducationStandard grade or equiv | 0.010    | 0.008     | 1.158     | 0.247   | -0.007   | 0.026    |
++--------------------------------------+----------+-----------+-----------+---------+----------+----------+
 
-```{r}
-regression.points <- get_regression_points(interaction.model)
-head(regression.points)
-```
+Now that we have 3 models, we compare them using objective criteria. We shall compare the full model, interaction model and reduced model for BIC, AIC and R squared adjusted.
 
-Now that we have 3 models, we compare them using objective criteria. We shall compare the full model, interaction model and reduced model for BIC, AIC and R squared adjusted
 
 ```{r}
 mlr.model.full <- linear_reg() |> 
@@ -423,8 +377,22 @@ model_comparison <- bind_rows(
          BIC = BIC(mlr.model.reduced),
          Adjusted_R_squared = summary(mlr.model.reduced)$adj.r.squared)
 )
-model_comparison
+
 ```
+
+
+| model             | AIC      | BIC      | Adjusted_R_Squared |
+|-------------------|----------|----------|--------------------|
+| Full Model        | 86927.24 | 87010.27 | 0.02763131         |
+| Interaction Model | 86890.45 | 86988.57 | 0.03031870         |
+| Reduced Model     | 86924.20 | 86984.59 | 0.02763410         |
+
+From the table, we can see that all 3 models have low Adjusted R squared (\< 0.1) which would indicate that that the models do not describe the variation in the data very well. The model that maximises adjusted R squared and minimizes the AIC and BIC is the interaction model:
+
+$$BMI_i = 25.406 + 0.037 \cdot Age_i + \Sigma_{i}\beta_{\mathrm{Education}} \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \Sigma_{j}\beta_{\mathrm{Educationj}} \cdot \mathbb{I}_{\mathrm{Educationj}}(x_i) + \Sigma_{j}\beta_{\mathrm{InteractiojJ}} \cdot Age_i \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \epsilon_i,$$ 
+
+This model tells us that, on average, BMI increases with age and that for people of a 'Higher grade or equivalent' tend to have a more pronounced increase in BMI as Age increases. Those with no qualifications, on average, have higher BMIs than other education groups, but that they increase with age at a lower rate. Gender and Fruit and Vegetable consumption did not provide meaningful information about changes in BMI across the population.
+
 
 # Conclusions {#sec-con}
 
