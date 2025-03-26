@@ -271,7 +271,7 @@ shaped. Therefore our assumption of normality appears to be valid. \##
 Question 2
 
 ```{r}
-bmi <- read_csv("~/Downloads/DAProject6.csv", show_col_types = FALSE)
+bmi <- read_csv("DAProject6.csv", show_col_types = FALSE)
 
 library(ggplot2)
 library(dplyr)
