@@ -41,10 +41,10 @@ Body mass index(BMI) is an important variable in determing how healthy an indivd
 
 # Exploratory Analysis {#sec-EA}
 
+## Analyzing BMI by Year
+
 ```{r}
 #| echo: false
-#| label: tbl-summmary
-#| tbl-cap:  Mean, median and standard deviation (sd) of BMI by year.
 
 library(gt)
 library(dplyr)
@@ -62,13 +62,12 @@ bmi.data.year <- bmi.data |>
 | 2014 | 27.84 | 27.17  | 5.21               |
 | 2013 | 27.81 | 27.08  | 5.28               |
 
-: Mean,Median and standard deviation of BMI by year
+: Mean, Median and Standard Deviation of BMI by Year
 
-Therefore we can clearly see that the mean and median BMI has slightly increased over the years from 2013-2016. We can also see that the variation has also slightly increased from 2014-2016.
+From this table we can clearly see that the mean and median BMI has slightly increased over the years from 2013-2016. We can also see that the variation has also slightly increased from 2014-2016.
 
 ```{r}
-
-#| label: box-bmi-year
+#| label: fig-bmi-year
 #| fig-cap: Boxplot of BMI by Year
 #| fig-width: 4
 #| fig-height: 3
@@ -84,8 +83,7 @@ ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
   scale_fill_discrete(guide = "none")
 ```
 
-We can therefore see from the boxplots that there is a slight increase in BMI over the years and that the normality assumption is not vaild due to the number of outliers in the data.
-
+We can therefore see from @fig-bmi-year that there is a slight increase in BMI over the years and that the normality assumption is not valid due to the number of outliers in the data.
 
 ## Analyzing BMI Distribution by Different Factors
 
@@ -107,7 +105,7 @@ ggplot(bmi.data, aes(x = Age, y = BMI)) +
 
 From @fig-line we can see that there is a weak linear relation between age and BMI.
 
-This weak relation tells that there is a small negative effect of the Age on the BMI.
+This weak relation tells that there is a small positive effect of age on BMI.
 
 ### Gender
 
@@ -124,7 +122,7 @@ ggplot(bmi.data, aes(x = Sex, y = BMI, fill = Sex)) +
   labs(title = "BMI Distribution by Gender", x = "Gender", y = "BMI")
 ```
 
-From @fig-sex we can see that greater variability in BMI among females compared to males,however having the same median indicates that while central tendency is similar, BMI distribution differs between genders.
+From @fig-sex we can see that there is slightly greater variability in BMI among females compared to males. Despite having the same median which indicates that central tendency is similar, BMI distribution differs between genders.
 
 ### Education
 
@@ -146,7 +144,7 @@ ggplot(bmi.data, aes(x = Education, y = BMI, fill = Education)) +
 
 From @fig-education we can see that the small different in medians suggest a minor impact of education on BMI. However the variation on boxplots spreads,indicates that higher education levels might be associated with lower BMI variability.
 
-### Veg
+### Fruit & Veg
 
 ```{r}
 #| warning: FALSE
@@ -166,11 +164,10 @@ plot2<-ggplot(bmi.data, aes(x = Fruit, y = BMI, fill = Fruit)) +
   labs(title = "BMI vs Fruit Consumption", x = "Fruit Intake", y = "BMI") 
 
 library(patchwork)
-plot1|plot2
+plot2|plot1
 ```
 
-From @fig-veg since both fruit and vegetarian have same boxplots distribution and median,it suggest that neither of them significantly effect BMI distribution.This indicates that BMI is similar regardless of whether a person having a fruit or vegetable.
-
+In @fig-veg the median and variance in both plots are the same regardless of fruit or vegetable consumption. This indicates that BMI is similar regardless of whether a person regularly eats fruit or vegetables.
 
 # Formal Analysis {#sec-FA}
 
@@ -185,11 +182,26 @@ data$Year <- as.factor(data$Year)
   
 model1 <- linear_reg() |>
   fit(BMI ~ Year, data = data)
+
 ```
 
-We can use the estimates obtained here to fit our regression equation as follows:
+| Intercept | 2014    | Year2015 | Year2016 |
+|-----------|---------|----------|----------|
+| 27.81034  | 0.02872 | 0.21339  | 0.22322  |
 
-$$
+: Model output of BMI against year
+
+We can interpret the estimates as follows:
+
+-   Intercept: This tells us that when the year is 2013 the BMI of an individual is expected to be 27.81034.
+
+-   Year2014: This tells us that when the year is 2014 there is an associated an increase of, on average of 0.02872 in BMI of an individual.
+
+-   Year2015: This tells us that when the year is 2015 there is an associated an increase of, on average of 0.21339 in BMI of an individual.
+
+-   Year2016: This tells us that when the year is 2016 there is an associated an increase of, on average of 0.22322 in BMI of an individual.
+
+We can use the estimates obtained here to fit our regression equation as follows: $$
 BMI = \alpha + \beta_{2014}\cdot I_{2014}(x) +\beta_{2015}\cdot I_{2015}(x)+\beta_{2016}\cdot I_{2016}(x)
 $$
 
@@ -211,12 +223,18 @@ where
 We can now assess the fit of our model.
 
 ```{r}
+kable(glance(model1), caption = "Model Performance Metrics")
+```
+
+The above table summarises the performance metrics of the model fitted. The R-Squared value is very low (0.0003541), indicating that the model does not provide a very good fit for the data.
+
+```{r}
 
 regression_points <- get_regression_points(model1$fit)
 
 ```
 
-We first do this by obtaining residuals. These are then plotted by year to test our assumptions:
+We next obtain the residuals. These are then plotted by year to test our assumptions:
 
 ```{r}
 #| label: fig-reg-scatter
@@ -227,7 +245,8 @@ We first do this by obtaining residuals. These are then plotted by year to test 
 ggplot(regression_points, aes(x = Year, y = residual)) +
   geom_jitter(width = 0.1) + 
   labs(x = "Year", y = "Residual") +
-  geom_hline(yintercept = 0, col = "blue")
+  geom_hline(yintercept = 0, col = "blue")+
+  labs(title = "Residuals by Year")
 
 ```
 
@@ -242,15 +261,22 @@ We next plot a histogram to check that the residuals are normally distributed:
 #| fig-height: 3
 ggplot(regression_points, aes(x = residual)) +
   geom_histogram(binwidth = 5, color = "white") +
-  labs(x = "Residual")
+  labs(title= "Histogram of Residuals",x = "Residual")
 ```
 
-@fig-reg-hist shows that the residuals are centered at zero and are bell shaped. Therefore our assumption of normality appears to be valid.
+@fig-reg-hist shows that the residuals are centered at zero and are bell shaped, there is a slight right skew but this does not appear to be significant. Therefore our assumption of normality appears to be valid.
+
+Therefore we can say that the data show a slight increase in BMI in Scotland over the given years, however the increase is very small and so we would say that the impact is minimal.
 
 ## Question 2
 
+To investigate changes in BMI across age, gender, fruit and veg consumption or socioeconomic status, we will use multiple linear regression.
 
 ```{r}
+#| label: fig-hist-QQ
+#| fig-cap: Histogram of BMI & QQ Plot
+#| fig-width: 6
+#| fig-height: 3
 
 library(ggplot2)
 library(dplyr)
@@ -281,7 +307,7 @@ plot1|plot2
 
 ```
 
-To investigate changes in BMI across age, gender, fruit and veg consumption or socioeconomic status, we will use multiple linear regression. From our exploratory analysis we see that the histogram shows the BMI data to follow a normal distribution, although slightly right skewed. Similarly the Q-Q plot shows the data points lie close to the diagonal line but show a slight upward curve at both ends. This does not cause too much concern, so we shall continue to fit a linear regression model.
+From our @fig-hist-QQ we see that the histogram shows the BMI data to follow a normal distribution, although slightly right skewed. Similarly the Q-Q plot shows the data points lie close to the diagonal line but show a slight upward curve at both ends. This does not cause too much concern, so we shall continue to fit a linear regression model.
 
 We fit the model:
 
@@ -289,8 +315,13 @@ $$BMI_i = \alpha + \beta_{\mathrm{Age}} \cdot Age_i + \beta_{\mathrm{Male}} \cdo
 
 ```{r}
 lm_spec <- linear_reg() |> set_engine("lm")
+
 full.model <- lm_spec |> fit(BMI ~ Age + Sex + Education + Veg + Fruit, data = bmi.data)
+
 full.model <- full.model |> extract_fit_engine()
+
+full.table <- get_regression_table(full.model)
+kable(full.table, caption = "Full Model Regression Table")
 ```
 
 From the regression table, we can see that the significance of the variables "Sex: Male", "Veg: Yes" and "Fruit: Yes" all include 0 in their confidence intervals and have a p-value that exceeds 0.05. This causes us to question whether these variables are significant in telling us anything about the BMI distribution. We will remove them from the model:
@@ -299,54 +330,31 @@ $$BMI_i = \alpha + \beta_{\mathrm{Age}} \cdot Age_i + \beta_{\mathrm{Education}}
 
 ```{r}
 lm_spec <- linear_reg() |> set_engine("lm")
+
 parallel.model.reduced <- lm_spec |> fit(BMI ~ Age + Education, data = bmi.data)
+
 parallel.model.reduced <- parallel.model.reduced |> extract_fit_engine()
+
 ```
 
 Now we consider whether interactions may improve the model. As our reduced model only considers Age and Education as statistically significant, we shall fit a model that considers the interaction between them, :
 
-
 $$BMI_i = \alpha + \beta_{\mathrm{Age}} \cdot Age_i + \beta_{\mathrm{Education}} \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \Sigma_{j}\beta_{\mathrm{Educationj}} \cdot \mathbb{I}_{\mathrm{Educationj}}(x_i) + \Sigma_{j}\beta_{\mathrm{InteractiojJ}} \cdot Age_i \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \epsilon_i,$$
-
 
 ```{r}
 lm_spec <- linear_reg()
+
 interaction.model <- lm_spec |> fit(BMI ~ Age * Education, data = bmi.data)
+
 interaction.model <- interaction.model |> extract_fit_engine()
+
+interaction.table <- get_regression_table(interaction.model)
+
+kable(interaction.table, caption = "Interaction Model Regression Table")
 
 ```
 
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| term                                 | estimate | std_error | statistic | p_value | lower_ci | upper_ci |
-+======================================+==========+===========+===========+=========+==========+==========+
-| intercept                            | 25.406   | 0.266     | 95.669    | 0.000   | 24.886   | 25.927   |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Age                                  | 0.037    | 0.005     | 7.225     | 0.000   | 0.027    | 0.047    |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Education: Higher grade or equiv     | -1.068   | 0.408     | -2.616    | 0.009   | -1.868   | -0.268   |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Education: HNC/D or equiv            | 1.268    | 0.473     | 2.683     | 0.007   | 0.342    | 2.194    |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Education: No qualifications         | 2.849    | 0.562     | 5.071     | 0.000   | 1.748    | 3.950    |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Education: Other school level        | 1.532    | 0.970     | 1.579     | 0.114   | -0.370   | 3.434    |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Education: Standard                  | 0.456    | 0.412     | 1.107     | 0.268   | -0.351   | 1.263    |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Age:EducationHigh                    | 0.036    | 0.008     | 4.380     | 0.000   | 0.020    | 0.053    |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Age:EducationHNC/D or equiv          | -0.005   | 0.010     | -0.517    | 0.605   | -0.024   | 0.014    |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Age:EducationNo q                    | \        | 0.009     | -2.793    | 0.005   | -0.044   | -0.008   |
-|                                      | -0.026   |           |           |         |          |          |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Age:EducationOther school level      | -0.011   | 0.015     | -0.788    | 0.430   | -0.040   | 0.017    |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-| Age:EducationStandard grade or equiv | 0.010    | 0.008     | 1.158     | 0.247   | -0.007   | 0.026    |
-+--------------------------------------+----------+-----------+-----------+---------+----------+----------+
-
 Now that we have 3 models, we compare them using objective criteria. We shall compare the full model, interaction model and reduced model for BIC, AIC and R squared adjusted.
-
 
 ```{r}
 mlr.model.full <- linear_reg() |> 
@@ -378,23 +386,20 @@ model_comparison <- bind_rows(
          Adjusted_R_squared = summary(mlr.model.reduced)$adj.r.squared)
 )
 
+kable(model_comparison, caption = "Model Comparison")
+
 ```
-
-
-| model             | AIC      | BIC      | Adjusted_R_Squared |
-|-------------------|----------|----------|--------------------|
-| Full Model        | 86927.24 | 87010.27 | 0.02763131         |
-| Interaction Model | 86890.45 | 86988.57 | 0.03031870         |
-| Reduced Model     | 86924.20 | 86984.59 | 0.02763410         |
 
 From the table, we can see that all 3 models have low Adjusted R squared (\< 0.1) which would indicate that that the models do not describe the variation in the data very well. The model that maximises adjusted R squared and minimizes the AIC and BIC is the interaction model:
 
-$$BMI_i = 25.406 + 0.037 \cdot Age_i + \Sigma_{i}\beta_{\mathrm{Education}} \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \Sigma_{j}\beta_{\mathrm{Educationj}} \cdot \mathbb{I}_{\mathrm{Educationj}}(x_i) + \Sigma_{j}\beta_{\mathrm{InteractiojJ}} \cdot Age_i \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \epsilon_i,$$ 
-
-This model tells us that, on average, BMI increases with age and that for people of a 'Higher grade or equivalent' tend to have a more pronounced increase in BMI as Age increases. Those with no qualifications, on average, have higher BMIs than other education groups, but that they increase with age at a lower rate. Gender and Fruit and Vegetable consumption did not provide meaningful information about changes in BMI across the population.
-
+$$BMI_i = 25.406 + 0.037 \cdot Age_i + \Sigma_{i}\beta_{\mathrm{Education}} \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \Sigma_{j}\beta_{\mathrm{Education}} \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \Sigma_{j}\beta_{\mathrm{Interaction}} \cdot Age_i \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \epsilon_i,$$
 
 # Conclusions {#sec-con}
 
+In conclusion, the analysis of BMI in Scotland from 2013 to 2016 shows only slight difference over the years, indicating a stability in BMI levels during this period.
 
+Regarding BMI distribution differences based on sex, age, education, and dietary habits, the interaction model highlights important variations. The model tells us that, on average, BMI increases with age and that people of a 'Higher grade or equivalent' tend to have a more pronounced increase in BMI as Age increases. Those with no qualifications, on average, have higher BMI's than other education groups, but they increase with age at a lower rate. Gender, and Fruit and Vegetable consumption did not provide meaningful information about changes in BMI across the population.
 
+The interaction effects reveal complex relationships between these factors, showing how multiple variables jointly influence BMI distribution.
+
+To further analyse the difference in BMI distribution over time, future work might look into external factors affecting BMI, such as economic trends, policy changes, or health campaigns. This could provide a more rounded and in-depth understanding of the causes and trends of BMI in Scotland. It may also be helpful to look at data over a longer time period than what was given (4 years), as there may be clearer trends in BMI distribution over a larger span of time.
