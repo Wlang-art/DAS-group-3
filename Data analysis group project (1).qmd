@@ -349,3 +349,8 @@ plot(bmi_model_int_fit)
 ```
 
 # Conclusions {#sec-con}
+In conclusion, the analysis of BMI in Scotland from 2013 to 2016 shows only slight difference over the years,indicating a stability in BMI levels during this period.
+
+Regarding BMI distribution differences based on sex, age, education, and dietary habits, the interaction model highlights important variations. BMI tends to be higher in older individuals and males, while those with higher education levels generally have lower BMI. 
+
+The interaction effects reveal complex relationships between these factors, showing how multiple variables jointly influence BMI distribution.
