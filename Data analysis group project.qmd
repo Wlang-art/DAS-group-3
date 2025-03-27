@@ -157,7 +157,6 @@ ggplot(regression_points, aes(x = residual)) +
 
 ```{r}
 install.packages("corrplot")
-library(corrplot)
 library(ggplot2)
 library(dplyr)
 library(skimr)
@@ -169,7 +168,7 @@ library(tidyverse)
 library(corrplot)
 library(knitr)
 library(parsnip)
-bmi.data <- read_csv("DAProject6.csv", show_col_types = FALSE)
+bmi.data <- read_csv("~/Downloads/DAProject6.csv", show_col_types = FALSE)
 ```
 
 To investigate changes in BMI across age, gender, fruit and veg consumption or socioeconomic status, we will use multiple linear regression. From our exploratory analysis we see that the histogram shows the BMI data to follow a normal distribution, although slightly right skewed. Similarly the Q-Q plot shows the data points lie close to the diagonal line but show a slight upward curve at both ends. This does not cause too much concern, so we shall continue to fit a linear regression model.
