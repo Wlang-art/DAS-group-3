@@ -83,7 +83,7 @@ ggplot(bmi.year, aes(y = BMI, x = Year, fill = Year))+
   scale_fill_discrete(guide = "none")
 ```
 
-We can therefore see from @fig-bmi-year that there is a slight increase in BMI over the years and that the normality assumption is not valid due to the number of outliers in the data.
+We can therefore see from @fig-bmi-year that there is a slight increase in BMI over the years and that the normality may not be valid due to the number of outliers in the data.
 
 ## Analyzing BMI Distribution by Different Factors
 
@@ -122,7 +122,7 @@ ggplot(bmi.data, aes(x = Sex, y = BMI, fill = Sex)) +
   labs(title = "BMI Distribution by Gender", x = "Gender", y = "BMI")
 ```
 
-From @fig-sex we can see that there is slightly greater variability in BMI among females compared to males. Despite having the same median which indicates that central tendency is similar, BMI distribution differs between genders.
+From @fig-sex we can see that there is slightly greater variability in BMI among females compared to males. Despite having the same median which indicates that central tendency is similar, BMI distribution differs between genders. We can also see that, again, the assumption of normality may not be valid due to the number of outliers.
 
 ### Education
 
@@ -142,7 +142,7 @@ ggplot(bmi.data, aes(x = Education, y = BMI, fill = Education)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-From @fig-education we can see that the small different in medians suggest a minor impact of education on BMI. However the variation on boxplots spreads,indicates that higher education levels might be associated with lower BMI variability.
+From @fig-education we can see that the small different in medians suggest a minor impact of education on BMI. However the variation on boxplots spreads,indicates that higher education levels might be associated with lower BMI variability. The number of outliers in the data suggest that the assumption of normality may not be valid.
 
 ### Fruit & Veg
 
@@ -168,7 +168,7 @@ library(patchwork)
 plot2|plot1
 ```
 
-In @fig-veg the median and variance in both plots are the same regardless of fruit or vegetable consumption. This indicates that BMI is similar regardless of whether a person regularly eats fruit or vegetables.
+In @fig-veg the median and variance in both plots are the same regardless of fruit or vegetable consumption. This indicates that BMI is similar regardless of whether a person regularly eats fruit or vegetables. Again, the number of outliers present in the data indicate that the assumption of normality may not be valid.
 
 # Formal Analysis {#sec-FA}
 
@@ -186,9 +186,9 @@ model1 <- linear_reg() |>
 
 ```
 
-| Intercept | 2014    | Year2015 | Year2016 |
-|-----------|---------|----------|----------|
-| 27.81034  | 0.02872 | 0.21339  | 0.22322  |
+| Intercept | Year2014 | Year2015 | Year2016 |
+|-----------|----------|----------|----------|
+| 27.81034  | 0.02872  | 0.21339  | 0.22322  |
 
 : Model output of BMI against year
 
@@ -340,7 +340,7 @@ parallel.model.reduced <- parallel.model.reduced |> extract_fit_engine()
 
 Now we consider whether interactions may improve the model. As our reduced model only considers Age and Education as statistically significant, we shall fit a model that considers the interaction between them, :
 
-$$BMI_i = \alpha + \beta_{\mathrm{Age}} \cdot Age_i + \beta_{\mathrm{Education}} \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \Sigma_{j}\beta_{\mathrm{Educationj}} \cdot \mathbb{I}_{\mathrm{Educationj}}(x_i) + \Sigma_{j}\beta_{\mathrm{InteractiojJ}} \cdot Age_i \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \epsilon_i,$$
+$$BMI_i = \alpha + \beta_{\mathrm{Age}} \cdot Age_i + \beta_{\mathrm{Education}} \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \Sigma_{j}\beta_{\mathrm{Education}} \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \Sigma_{j}\beta_{\mathrm{Interaction}} \cdot Age_i \cdot \mathbb{I}_{\mathrm{Education}}(x_i) + \epsilon_i,$$
 
 ```{r}
 lm_spec <- linear_reg()
